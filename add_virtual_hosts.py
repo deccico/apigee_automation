@@ -65,6 +65,6 @@ def add_vh(directory):
 
 
 if __name__ == "__main__":
-    add_vh(sys.argv[1], sys.argv[2])
+    add_vh(sys.argv[1])
 
 
