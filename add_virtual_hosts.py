@@ -59,12 +59,12 @@ def add_virtual_hosts(directory):
         f.write(root.toxml())
 
 
-def add_vh(directory):
+def add_vh(directory, api_name):
     add_virtual_hosts(directory)
     print("finished adding virtual hosts into proxy: {0}".format(api_name))
 
 
 if __name__ == "__main__":
-    add_vh(sys.argv[1])
+    add_vh(sys.argv[1], sys.argv[2])
 
 
