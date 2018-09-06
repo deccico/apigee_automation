@@ -37,6 +37,7 @@ echo "Exporting API proxy to current local directory--name the ZIP file"
 curl https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/apis/$name/revisions/1?"format=bundle" > $name.zip \
 -u $APIGEE_USER:$APIGEE_PASSWORD
 
+set -x
 echo "Checking directory for $name.zip"
 
 ls
