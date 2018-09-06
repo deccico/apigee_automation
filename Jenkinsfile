@@ -29,7 +29,7 @@ pipeline {
         stage('Apigee configuration persistence'){
                 steps {
                     echo 'Save the new config on Gitlab'
-                    sh './proxy_git_persist.sh $API_NAME'
+                    #sh './proxy_git_persist.sh $API_NAME'
                 }
         }
     }
