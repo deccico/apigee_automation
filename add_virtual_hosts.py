@@ -13,6 +13,7 @@ from shutil import copyfile
 import sys
 
 VH = "VirtualHost"
+HPC = "HTTPProxyConnection"
 
 def add_virtual_hosts(directory):
     """
@@ -38,23 +39,22 @@ def add_virtual_hosts(directory):
     root = md.parse(file_name)
     #get Policies node
     node = root.getElementsByTagName(VH)
+    node_hpc = root.getElementsByTagName(HPC)
     #validate file
+    if len(node_hpc) == 0:
+        raise ValueError('{0} element not found in file {1}.'.format(HPC, file_name))
     if len(node) == 0:
-        raise ValueError('{0} element not found in file {1}.'.format(HTTP_PROXY, file_name))
+        raise ValueError('{0} element not found in file {1}.'.format(VH, file_name))
     if len(node) > 1:
         raise ValueError('I found more than one {0} element hence not changing the configuration. file {1}.'.format(VH, file_name))
 
     #we have one VH, we need to add two more
+    for e in ("secure", "connect"):
+        vh = root.createElement(VH)
+        vh_txt = root.createTextNode(e)
+        vh.appendChild(vh_txt)
+        node_hpc[0].appendChild(vh)
 
-    #we need to add policies
-    vh = root.createElement(VH)
-    vh_txt = root.createTextNode("secure")
-    vh.appendChild(vh_txt)
-    node[0].insertBefore(vh, node[0])
-    vh = root.createElement(VH)
-    vh_txt = root.createTextNode("connect")
-    vh.appendChild(vh_txt)
-    node[0].insertBefore(vh, node[0])
     with open(file_name, 'w') as f:
         f.write(root.toxml())
 
