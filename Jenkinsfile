@@ -10,6 +10,8 @@ pipeline {
         }
         stage('Apigee proxy generation'){
                 steps {
+                    echo 'Creating Apigee proxy'
+                    sh 'set'
                     sh './proxy_gen.sh $API_NAME $API_TARGET_URL $API_NAME'
                 }
         }
