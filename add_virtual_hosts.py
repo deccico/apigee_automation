@@ -14,7 +14,7 @@ import sys
 
 VH = "VirtualHost"
 
-def add_virtual_hosts(directory, api_name):
+def add_virtual_hosts(directory):
     """
     file: apiproxy/proxies/default.xml
     goals: add additional virtual hosts
@@ -59,7 +59,7 @@ def add_virtual_hosts(directory, api_name):
         f.write(root.toxml())
 
 
-def add_vh(directory, api_name):
+def add_vh(directory):
     add_virtual_hosts(directory)
     print("finished adding virtual hosts into proxy: {0}".format(api_name))
 
