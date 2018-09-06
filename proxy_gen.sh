@@ -65,5 +65,5 @@ mv ./apiproxy $name
 
 echo "Done"
 
-echo "You can invoke you API proxy at http://$APIGEE_ORG-$env.apigee.net$basepath, and it will proxy requests to $target_url"
+#echo "You can invoke you API proxy at http://$APIGEE_ORG-$env.apigee.net/$basepath, and it will proxy requests to $target_url"
 
