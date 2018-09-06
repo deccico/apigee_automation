@@ -14,7 +14,7 @@ import sys
 
 VH = "VirtualHost"
 
-def add_virtual_host(directory, api_name):
+def add_virtual_hosts(directory, api_name):
     """
     file: apiproxy/proxies/default.xml
     goals: add additional virtual hosts
