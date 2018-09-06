@@ -10,7 +10,7 @@ export target_url=$2
 export basepath=$3
 
 #apigee environment
-env=$ENVIRONMENT
+env=$APIGEE_ENV
 
 
 
