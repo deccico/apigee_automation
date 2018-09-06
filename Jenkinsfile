@@ -11,26 +11,25 @@ pipeline {
         stage('Apigee proxy generation'){
                 steps {
                     echo 'Creating Apigee proxy'
-                    sh 'set'
                     sh './proxy_gen.sh $API_NAME $API_TARGET_URL $API_NAME'
                 }
         }
         stage('Setup Apigee proxy policies'){
                 steps {
                     echo 'Setup Apigee proxy policies'
-                    //sh 'python police.py $API_NAME/apiproxy/ $API_NAME'
+                    sh 'python police.py $API_NAME/apiproxy/ $API_NAME'
                 }
         }
         stage('Apigee proxy deploy'){
                 steps {
                     echo 'Apigee proxy deploy'
-                    //sh './proxy_deploy.sh $API_NAME'
+                    sh './proxy_deploy.sh $API_NAME'
                 }
         }
         stage('Apigee configuration persistence'){
                 steps {
                     echo 'Save the new config on Gitlab'
-                    //sh './proxy_git_persist.sh $API_NAME'
+                    sh './proxy_git_persist.sh $API_NAME'
                 }
         }
     }
