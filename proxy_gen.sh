@@ -9,6 +9,11 @@ export target_url=$2
 # URI pattern (format '/{some_uri}', e.g. /weather, to use for inbound request pattern matching
 export basepath=$3
 
+#apigee environment
+env=$ENVIRONMENT
+
+
+
 echo Generating $name on $url using $APIGEE_USER and $APIGEE_ORG
 
 curl -H "Content-type:application/json" -X POST -d "{\"name\" : \"$name\"}"  https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/apis -u $APIGEE_USER:$APIGEE_PASSWORD
@@ -59,5 +64,5 @@ mv ./apiproxy $name
 
 echo "Done"
 
-#echo "You can invoke you API proxy at http://$APIGEE_ORG-$env.apigee.net$basepath, and it will proxy requests to $target_url"
+echo "You can invoke you API proxy at http://$APIGEE_ORG-$env.apigee.net$basepath, and it will proxy requests to $target_url"
 
