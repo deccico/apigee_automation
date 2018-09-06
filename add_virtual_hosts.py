@@ -50,11 +50,11 @@ def add_virtual_hosts(directory):
     vh = root.createElement(VH)
     vh_txt = root.createTextNode("secure")
     vh.appendChild(vh_txt)
-    node[0].insertBefore(vh)
+    node[0].insertBefore(vh, node[0])
     vh = root.createElement(VH)
     vh_txt = root.createTextNode("connect")
     vh.appendChild(vh_txt)
-    node[0].insertBefore(vh)
+    node[0].insertBefore(vh, node[0])
     with open(file_name, 'w') as f:
         f.write(root.toxml())
 
