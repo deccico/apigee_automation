@@ -7,7 +7,7 @@ pipeline {
                 echo 'Checking out the main repository'                
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'git@gitlab.com:snsw-int/apigee_automation.git']]])
                 echo 'Checking out the apigee apis repository'      
-                checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', noTags: true, reference: '', shallow: false], [$class: 'RelativeTargetDirectory', relativeTargetDir: 'apigee_apis']], submoduleCfg: [], userRemoteConfigs: [[url: 'git@gitlab:snsw-int/apigee_apis.git']]]
+                checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', noTags: true, reference: '', shallow: false], [$class: 'RelativeTargetDirectory', relativeTargetDir: 'apigee_apis']], submoduleCfg: [], userRemoteConfigs: [[url: 'git@gitlab.com:snsw-int/apigee_apis.git']]]
             }
         }
         stage('Apigee proxy generation'){
