@@ -22,6 +22,12 @@ pipeline {
                     sh 'python police.py $API_NAME/apiproxy/ $API_NAME'
                 }
         }
+        stage('Add Apigee Virtual Hosts'){
+                steps {
+                    echo 'Adding Virtual Hosts'
+                    sh 'python add_virtual_hosts.py $API_NAME/apiproxy/ $API_NAME'
+                }
+        }
         stage('Apigee proxy deploy'){
                 steps {
                     echo 'Apigee proxy deploy'
