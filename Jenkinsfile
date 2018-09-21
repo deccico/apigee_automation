@@ -13,8 +13,7 @@ pipeline {
         stage('Parameters Validation'){
                 steps {
                     echo 'Validating parameters'
-                    sh '[[ $API_NAME =~ ^[a-z0-9-]+$ ]]'
-                    sh '[[ $API_NAME =~ ^[a-z0-9]{1,4}-[a-z0-9]+$ ]]'
+                    sh './validate_inputs.sh'
                 }
         }
         stage('Apigee proxy generation'){
