@@ -10,6 +10,13 @@ pipeline {
                 checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', noTags: true, reference: '', shallow: false], [$class: 'RelativeTargetDirectory', relativeTargetDir: 'apigee_apis']], submoduleCfg: [], userRemoteConfigs: [[url: 'git@gitlab.com:snsw-int/apigee_apis.git']]]
             }
         }
+        stage('Parameters Validation'){
+                steps {
+                    echo 'Validating parameters'
+                    sh '[[ $API_NAME =~ ^[a-z0-9-]+$ ]]'
+                    sh '[[ $API_NAME =~ ^[a-z0-9]{1,4}-[a-z0-9]+$ ]]'
+                }
+        }
         stage('Apigee proxy generation'){
                 steps {
                     echo 'Creating Apigee proxy'
