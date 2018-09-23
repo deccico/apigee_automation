@@ -46,5 +46,11 @@ pipeline {
                     sh './proxy_git_persist.sh $API_NAME'
                 }
         }
+        stage('Print Apigee Api Url'){
+                steps {
+                    echo 'Printing Api Url'
+                    sh './print_proxy_url.sh'
+                }
+        }
     }
 }
