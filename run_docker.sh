@@ -1,7 +1,7 @@
 #!/bin/bash -e
 set -o nounset
 
-BASE_PATH=/root/apigee_automation
+BASE_PATH=/code/apigee_automation
 IMAGE_NAME=apigee_automation:latest
 ENV_FILE=./apigee_automation-env
 
