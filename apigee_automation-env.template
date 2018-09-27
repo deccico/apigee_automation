@@ -1,0 +1,13 @@
+#your credentials. Do not commit to Git!
+APIGEE_USER=<your-apigee-login>
+APIGEE_PASSWORD=<your-apigee-password>
+
+#this usually doesn't change
+APIGEE_ORG=snsw
+APIGEE_URL=https://api.enterprise.apigee.com
+APIGEE_API_DOMAIN=apigee.net
+
+#this is specific to the proxy being created
+API_NAME=api-coolname
+APIGEE_ENV=sandbox
+API_TARGET_URL=https://cosafinity-prod.apigee.net/v1/employees

@@ -1,0 +1,1 @@
+curl -X GET --header "Authorization: Basic YWRyaWFuLmRlY2NpY29Ac2VydmljZS5uc3cuZ292LmF1OjVJdG41S0xWVXNqZHR2clNidzlVUEtoYVlLb3dOMSs=" "https://api.enterprise.apigee.com/v1/organizations/rahuldutta-eval/apis/petstore"
