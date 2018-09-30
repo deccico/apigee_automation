@@ -10,4 +10,4 @@ APIGEE_API_DOMAIN=apigee.net
 #this is specific to the proxy being created
 API_NAME=api-coolname
 APIGEE_ENV=sandbox
-API_TARGET_URL=http://petstore.apps.pcf-ext.testservicensw.net
+API_TARGET_URL=https://cosafinity-prod.apigee.net/v1/employees

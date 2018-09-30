@@ -1,6 +1,23 @@
 FROM ubuntu:18.04
 
-RUN apt update && apt-get install -y curl htop python vim unzip zip
+RUN apt update && \
+    apt-get install -y \
+    curl \
+    htop \
+    npm \
+    python \
+    unzip \ 
+    vim \
+    zip && \
+    rm -rf /var/lib/apt/lists/* && \
+    npm install -g openapi2apigee
 
 WORKDIR /code/apigee_automation
-COPY . ./ 
+
+COPY *.template ./
+COPY *.py ./ 
+COPY *.sh ./
+COPY Jenkinsfile ./
+COPY *.md ./
+COPY templates ./
+
