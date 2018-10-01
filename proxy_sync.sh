@@ -3,7 +3,7 @@
 files=($(git diff-tree --no-commit-id --name-only -r HEAD | tr '\n' ' '))
 git_branch=$(git rev-parse --abbrev-ref HEAD)
 
-if [ "${APIGEE_ENV-}" ]; then
+if [ -z ${APIGEE_ENV+x} ]; then
     if [ "$git_branch" = "master" ]; then
         export APIGEE_ENV="prod"
     else
