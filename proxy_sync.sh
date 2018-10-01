@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 files=($(git diff-tree --no-commit-id --name-only -r HEAD | tr '\n' ' '))
+git_branch=$(git rev-parse --abbrev-ref HEAD)
 
 echo Found changed files:
 
@@ -23,9 +24,9 @@ do
     path="$pwd/$proxy"
 
     if [ -f "$path/$proxy.json" ]; then
-        echo Create open API proxies
-        openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/ --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
         if [ -d "$path/apiproxy" ]; then
+            echo Create open API proxies
+            openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/ --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
             flows=$(grep -ozP '(?s)<Flows>(?:(?!Flows).).*(?:(?!Flows).)*?</Flows>' /tmp/$proxy/apiproxy/proxies/default.xml)
             flows=$(echo ${flows} | tr -d '\n' | sed -e "s|&quot;|\"|g")
             target_url=$(grep -ozP '(?s)<URL>(.*)</URL>' /tmp/$proxy/apiproxy/targets/default.xml)
@@ -38,6 +39,15 @@ do
 
             echo "Deploy /tmp/$proxy/"
             source ./proxy_deploy.sh $proxy /tmp/$proxy/
+
+        else
+            openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination $path --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
+
+            git config --global user.name "Jenkins Agent"
+            git config --global user.email "Jenkins_Agent@localhost"
+            git add $proxy
+            git commit -m "adding $proxy proxy config"
+            git push origin HEAD:git_branch
         fi
     elif  [ -d "$path" ]; then
         statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
