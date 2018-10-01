@@ -56,6 +56,15 @@ do
         else
             openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination $path --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
 
+            # to refine the replace
+            sed -i -e '/<Flows>/,/<\/Flows>/{//!d}' $path/apiproxy/proxies/default.xml
+            sed -i -e "s|<Flows>|<Flows/>|g" /tmp/$proxy/apiproxy/proxies/default.xml
+            sed -i -e "s|<\/Flows>||g" /tmp/$proxy/apiproxy/proxies/default.xml
+
+            sed -i -e '/<URL>/,/<\/URL>/{//!d}' $path/apiproxy/proxies/default.xml
+            sed -i -e "s|<URL>|<URL/>|g" /tmp/$proxy/apiproxy/proxies/default.xml
+            sed -i -e "s|<\/URL>||g" /tmp/$proxy/apiproxy/proxies/default.xml
+
             git config --global user.name "Jenkins Agent"
             git config --global user.email "Jenkins_Agent@localhost"
             git add $proxy
