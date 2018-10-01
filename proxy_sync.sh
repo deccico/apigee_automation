@@ -11,22 +11,14 @@ do
     files[i]=${files[i]%%/*}
 done
 
-for((i=0;i<$len;i++))
-do
-    for((j=$len-1;j>i;j--))
-    do
-        if [[ ${files[i]} = ${files[j]} ]]; then
-        unset array[i]
-        fi
-    done
-done
+proxies=$(for i in ${files[@]}; do echo $i; done | sort -u)
 
 pwd=$(pwd)
 
 cd /code/apigee_automation/
 source ./setenv.sh
 
-for proxy in $files;
+for proxy in $proxies;
 do
     path="$pwd/$proxy"
 
@@ -47,18 +39,15 @@ do
             echo "Deploy /tmp/$proxy/"
             source ./proxy_deploy.sh $proxy /tmp/$proxy/
         fi
-    else
-        if [ -d "$path" ]; then
-            statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
+    elif  [ -d "$path" ]; then
+        statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
 
-            if [[ $statusCode = *"HTTP/1.1 404"* ]]; then
-                echo "Create proxy $proxy"
-                curl -H "Content-type:application/json" -X POST -d "{\"name\" : \"$proxy\"}"  $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/ -u $APIGEE_USER:$APIGEE_PASSWORD
-            fi
-
-            echo "Deploy $path"
-            source ./proxy_deploy.sh $proxy $path
+        if [[ $statusCode = *"HTTP/1.1 404"* ]]; then
+            echo "Create proxy $proxy"
+            curl -H "Content-type:application/json" -X POST -d "{\"name\" : \"$proxy\"}"  $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/ -u $APIGEE_USER:$APIGEE_PASSWORD
         fi
-    fi
-done;
 
+        echo "Deploy $path"
+        source ./proxy_deploy.sh $proxy $path
+    fi
+done
