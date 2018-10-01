@@ -10,9 +10,8 @@ if [ "${APIGEE_ENV-}" ]; then
         export APIGEE_ENV=$git_branch
     fi
 fi
-echo Sync to Apigee $APIGEE_ENV environment
-
-echo Found changed files:
+echo Start to sync branch $git_branch to $APIGEE_ENV environment
+echo Find changed files:
 
 len=${#files[@]}
 for((i=0;i<$len;i++))
@@ -54,22 +53,25 @@ do
             source ./proxy_deploy.sh $proxy /tmp/$proxy/
 
         else
-            openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination $path --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
+            openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/$proxy --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
+
+            rm -f /tmp/$proxy/apiproxy.zip
+            cp -r /tmp/$proxy/apiproxy $path/apiproxy
 
             # to refine the replace
             sed -i -e '/<Flows>/,/<\/Flows>/{//!d}' $path/apiproxy/proxies/default.xml
-            sed -i -e "s|<Flows>|<Flows/>|g" /tmp/$proxy/apiproxy/proxies/default.xml
-            sed -i -e "s|<\/Flows>||g" /tmp/$proxy/apiproxy/proxies/default.xml
+            sed -i -e "s|<Flows>|<Flows/>|g" $path/apiproxy/proxies/default.xml
+            sed -i -e "s|</Flows>||g" $path/apiproxy/proxies/default.xml
 
-            sed -i -e '/<URL>/,/<\/URL>/{//!d}' $path/apiproxy/proxies/default.xml
-            sed -i -e "s|<URL>|<URL/>|g" /tmp/$proxy/apiproxy/proxies/default.xml
-            sed -i -e "s|<\/URL>||g" /tmp/$proxy/apiproxy/proxies/default.xml
+            sed -i -e "s|<URL>.*<\/URL>|<URL\/>|g" $path/apiproxy/targets/default.xml
 
+            cd $pwd
             git config --global user.name "Jenkins Agent"
             git config --global user.email "Jenkins_Agent@localhost"
             git add $proxy
             git commit -m "adding $proxy proxy config"
             git push origin HEAD:git_branch
+            cd /code/apigee_automation/
         fi
     elif  [ -d "$path" ]; then
         statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
