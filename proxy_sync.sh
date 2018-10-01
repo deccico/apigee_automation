@@ -3,6 +3,15 @@
 files=($(git diff-tree --no-commit-id --name-only -r HEAD | tr '\n' ' '))
 git_branch=$(git rev-parse --abbrev-ref HEAD)
 
+if [ "${APIGEE_ENV-}" ]; then
+    if [ "$git_branch" = "master" ]; then
+        export APIGEE_ENV="prod"
+    else
+        export APIGEE_ENV=$git_branch
+    fi
+fi
+echo Sync to Apigee $APIGEE_ENV environment
+
 echo Found changed files:
 
 len=${#files[@]}
