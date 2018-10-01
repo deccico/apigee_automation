@@ -56,8 +56,7 @@ do
         else
             openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/$proxy --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
 
-            rm -f /tmp/$proxy/apiproxy.zip
-            cp -r /tmp/$proxy/apiproxy $path/apiproxy
+            cp -r /tmp/$proxy/$proxy/apiproxy $path
 
             # to refine the replace
             sed -i -e '/<Flows>/,/<\/Flows>/{//!d}' $path/apiproxy/proxies/default.xml
