@@ -24,7 +24,7 @@ do
 
     if [ -f "$path/$proxy.json" ]; then
         echo Create open API proxies
-        openapi2apigee generateApi $proxy --source $path/apiproxy/$proxy.json --deploy --destination /tmp/ --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
+        openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/ --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
         if [ -d "$path/apiproxy" ]; then
             flows=$(grep -ozP '(?s)<Flows>(?:(?!Flows).).*(?:(?!Flows).)*?</Flows>' /tmp/$proxy/apiproxy/proxies/default.xml)
             flows=$(echo ${flows} | tr -d '\n' | sed -e "s|&quot;|\"|g")
