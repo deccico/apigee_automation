@@ -65,13 +65,18 @@ do
 
             sed -i -e "s|<URL>.*<\/URL>|<URL\/>|g" $path/apiproxy/targets/default.xml
 
-            cd $pwd
-            git config --global user.name "Jenkins Agent"
-            git config --global user.email "Jenkins_Agent@localhost"
-            git add $proxy
-            git commit -m "adding $proxy proxy config"
-            git push origin HEAD:git_branch
-            cd /code/apigee_automation/
+            if [ -z ${SSH_PRIVATE_KEY+x} ]; then
+                echo "${SSH_PRIVATE_KEY}" > /tmp/.ssh/id_rsa
+                GIT_SSH_COMMAND="ssh -i /tmp/.ssh/id_rsa"
+
+                cd $pwd
+                git config --global user.name "Jenkins Agent"
+                git config --global user.email "Jenkins_Agent@localhost"
+                git add $proxy
+                git commit -m "adding $proxy proxy config"
+                git push origin HEAD:git_branch
+                cd /code/apigee_automation/
+            fi
         fi
     elif  [ -d "$path" ]; then
         statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
