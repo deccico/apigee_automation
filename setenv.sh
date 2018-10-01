@@ -17,17 +17,6 @@
 ## - Change $api_domain to the base domain for your own Apigee API calls.
 ##   $api_domain gets used in conjunction with $org and $env to construct
 ##   the base URL to your APIs: https://$org-$env.$api_domain/<api_resource>
-export APIGEE_USER=chi@darumatic.com
-export APIGEE_PASSWORD=apigee123@A
-
-
-#this usually doesn't change
-export APIGEE_ORG=chi-eval
-export APIGEE_URL=https://api.enterprise.apigee.com
-export APIGEE_API_DOMAIN=apigee.net
-
-#this is specific to the proxy being created
-export APIGEE_ENV=test
 
 org="${APIGEE_ORG}"
 username="${APIGEE_USER}"
