@@ -31,9 +31,10 @@ for proxy in $proxies;
 do
     path="$pwd/$proxy"
 
-    echo "Validating whether $proxy is a valid API NAME"
-    [[ $proxy =~ ^[a-z0-9-]+$ ]]
-    [[ $proxy =~ ^[a-z0-9]{1,4}-[a-z0-9-]+$ ]]
+    if [[ ! ( $proxy =~ ^[a-z0-9]+$ ) && ! ( $proxy =~ ^[a-z0-9]{1,4}-[a-z0-9-]+$ ) ]]; then
+        echo "Invalid proxy name $proxy"
+        exit 1
+    fi
 
     if [ -f "$path/$proxy.json" ]; then
         if [ -d "$path/apiproxy" ]; then
