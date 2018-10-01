@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-files=($(git diff-tree --no-commit-id --name-only -r HEAD | tr '\n' ' '))
+files=$(git show --stat --oneline HEAD | grep "|" | xargs)
 git_branch=$(git rev-parse --abbrev-ref HEAD)
 
 if [ -z ${APIGEE_ENV+x} ]; then
@@ -65,16 +65,15 @@ do
 
             sed -i -e "s|<URL>.*<\/URL>|<URL\/>|g" $path/apiproxy/targets/default.xml
 
-            if [ -z ${SSH_PRIVATE_KEY+x} ]; then
-                echo "${SSH_PRIVATE_KEY}" > /tmp/.ssh/id_rsa
-                GIT_SSH_COMMAND="ssh -i /tmp/.ssh/id_rsa"
-
+            if [ ! -z ${SSH_PRIVATE_KEY+x} ]; then
+                echo Push $proxy proxy config
+                echo "${SSH_PRIVATE_KEY}" > /tmp/.id_rsa
                 cd $pwd
                 git config --global user.name "Jenkins Agent"
                 git config --global user.email "Jenkins_Agent@localhost"
                 git add $proxy
                 git commit -m "adding $proxy proxy config"
-                git push origin HEAD:git_branch
+                GIT_SSH_COMMAND="ssh -o 'StrictHostKeyChecking no' -i /tmp/.id_rsa" git push origin $git_branch
                 cd /code/apigee_automation/
             fi
         fi
