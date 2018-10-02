@@ -7,7 +7,7 @@ This repository contains a set of scripts to create / update automatically api p
 
 ## proxy_sync.sh
 
-The script scans Git changes of an API directory and create/update corresponding Apigee proxies dynamically. 
+The script scans Git changes within an API directory and create/update corresponding Apigee proxies dynamically. 
 
 - It supports create/update Apigee proxies with Apigee bundle files. 
 - It supports create/update Apigee proxies based on Open API document(As Open API directory, with or without bundle files).
