@@ -62,7 +62,7 @@ If everything goes fine. For every change of the API directory will be automatic
 
 ### How it works  
 
-The script scans changed files from git last commit to detect which API directory changed.
+The script scans changed files from Git's last commit to detect which API directory changed.
  
 1. For API bundle directory  
 If the API bundle does not exist, create the proxy, and then deploy bundle file to apigee. 
