@@ -4,11 +4,7 @@ files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
 git_branch=$(git rev-parse --abbrev-ref HEAD)
 
 if [ -z ${APIGEE_ENV+x} ]; then
-    if [ "$git_branch" = "master" ]; then
-        export APIGEE_ENV="prod"
-    else
-        export APIGEE_ENV=$git_branch
-    fi
+    export APIGEE_ENV=$git_branch
 fi
 echo Start to sync branch $git_branch to $APIGEE_ENV environment
 echo Find changed files:
