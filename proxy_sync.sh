@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-files=$(git show --stat --oneline HEAD | grep "|" | xargs)
+files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
 git_branch=$(git rev-parse --abbrev-ref HEAD)
 
 if [ -z ${APIGEE_ENV+x} ]; then
@@ -31,7 +31,7 @@ for proxy in $proxies;
 do
     path="$pwd/$proxy"
 
-    if [[ ! ( $proxy =~ ^[a-z0-9]+$ ) && ! ( $proxy =~ ^[a-z0-9]{1,4}-[a-z0-9-]+$ ) ]]; then
+    if [[ ! ( $proxy =~ ^[a-z0-9]+$ ) && ! ( $proxy =~ ^[a-z0-9]{1,8}-[a-z0-9-]+$ ) ]]; then
         echo "Invalid proxy name $proxy"
         exit 1
     fi
@@ -39,10 +39,10 @@ do
     if [ -f "$path/$proxy.json" ]; then
         if [ -d "$path/apiproxy" ]; then
             echo Create open API proxies
-            openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/ --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
-            flows=$(grep -ozP '(?s)<Flows>(?:(?!Flows).).*(?:(?!Flows).)*?</Flows>' /tmp/$proxy/apiproxy/proxies/default.xml)
+            openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/$proxy --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
+            flows=$(grep -ozP '(?s)<Flows>(?:(?!Flows).).*(?:(?!Flows).)*?</Flows>' /tmp/$proxy/$proxy/apiproxy/proxies/default.xml)
             flows=$(echo ${flows} | tr -d '\n' | sed -e "s|&quot;|\"|g")
-            target_url=$(grep -ozP '(?s)<URL>(.*)</URL>' /tmp/$proxy/apiproxy/targets/default.xml)
+            target_url=$(grep -ozP '(?s)<URL>(.*)</URL>' /tmp/$proxy/$proxy/apiproxy/targets/default.xml)
 
             rm -fr /tmp/$proxy
             cp -r $path /tmp

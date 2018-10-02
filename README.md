@@ -11,7 +11,7 @@ The script scans Git changes of an API directory and create/update corresponding
 
 - It supports create/update Apigee proxies with Apigee bundle files. 
 - It supports create/update Apigee proxies based on Open API document(As Open API directory, with or without bundle files).
-- It supports shared policies and manage configuration with code.
+- It supports shared policies and manage configuration as code.
 - It provides Docker image to integrate with CI pipeline.
 
 ### How to use it
@@ -52,7 +52,7 @@ The script scans Git changes of an API directory and create/update corresponding
    <img src="doc/variable.png"/>
 5. Done. 
 
-If everything go fine. For every change of the API directory will be automatically synchronized to Apigee Edge.
+If everything goes fine. For every change of the API directory will be automatically synchronized to Apigee Edge.
    
 > For Open API directory without bundle files, if deployment key variable SSH_PRIVATE_KEY is set. It will push generated Apigee bundle files to Git repository for your convenience. 
 > - How to generate deployment key, [https://docs.gitlab.com/ee/ssh/#deploy-keys](https://docs.gitlab.com/ee/ssh/#deploy-keys)
@@ -62,7 +62,7 @@ If everything go fine. For every change of the API directory will be automatical
 
 ### How it works  
 
-The script scan changed files from git last commit to detect which API directory changed.
+The script scans changed files from git last commit to detect which API directory changed.
  
 1. For API bundle directory  
 If the API bundle does not exist, create the proxy, and then deploy bundle file to apigee. 
