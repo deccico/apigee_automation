@@ -60,6 +60,14 @@ If everything goes fine. For every change of the API directory will be automatic
 >   1. targets/default.xml must define &lt;URL/>
 >   2. proxies/default.xml must define &lt;Flows/> 
 
+### How to use it for existing Apigee proxy
+1. Download remote proxy bundle files.
+   ```bash
+   proxy_export.sh --proxy=name --directory=./ --APIGEE_USER=username --APIGEE_PASSWORD=password  --APIGEE_ORG=organization
+   ```
+2. Update the bundle files as needed.
+3. Commit the changes.
+
 ### How it works  
 
 The script scans changed files from Git's last commit to detect which API directory changed.
@@ -75,3 +83,46 @@ Invoke openapi2apigee to create or update the proxy. Update bundle file target's
 
 <br>
 <img src="doc/proxy_sync.png"/>
+
+## proxy_merge.sh
+
+The script merges existing remote proxy bundle files with local bundle files.
+
+```bash
+cd apigee_apis 
+proxy_merge.sh --proxy=name --force=true --APIGEE_USER=username --APIGEE_PASSWORD=password  --APIGEE_ORG=organization
+```
+**NOTE: The script must run within API directory.**
+
+### Options
+
+- proxy  
+  Optional. Specify to merge which api proxy's bundle files. If proxy is not specified, the script will scan all sub directories and merge all proxies. 
+
+- force  
+  Optional. Force to use remote bundle files override local bundle files. If not specified, the script will compare local/remote bundle's file last modified time, use the newer files.
+  
+- APIGEE_USER, APIGEE_PASSWORD, APIGEE_ORG  
+  Optional. Apigee variables. The script arguments will override global bash Apigee variables.
+  
+## proxy_export.sh
+
+The script export existing remote proxy bundle files to local.
+
+```bash
+cd apigee_apis 
+proxy_export.sh --proxy=name --directory=/tmp/backup --APIGEE_USER=username --APIGEE_PASSWORD=password  --APIGEE_ORG=organization
+```
+**NOTE: The script must run within API directory.**
+
+### Options
+
+- proxy  
+  Optional. Specify to export which api proxy's bundle files. If proxy is not specified, the script will scan all sub directories and export all proxies. 
+
+- directory  
+  Optional. Output directory. Default to current directory.
+  
+- APIGEE_USER, APIGEE_PASSWORD, APIGEE_ORG  
+  Optional. Apigee variables. The script arguments will override global bash Apigee variables.
+  
