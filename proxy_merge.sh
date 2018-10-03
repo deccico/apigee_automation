@@ -56,7 +56,6 @@ for proxy in ${proxies[@]}; do
 
     if [ "$force" = true ] ; then
         echo Use remote bundle files
-        rm -fr $directory/$proxy
         cp -fr /tmp/$proxy $directory/
     else
         local_changed_time=$(find ./ -type f -exec stat \{} --printf="%y\n" \; | sort -n -r | head -n 1)
@@ -69,7 +68,6 @@ for proxy in ${proxies[@]}; do
 
         if [ $(($remote_changed_time - $local_changed_time)) -gt 0 ]; then
             echo Use remote bundle files
-            rm -fr $directory/$proxy
             cp -fr /tmp/$proxy $directory/
         else
             echo Merge local and remote bundle files
