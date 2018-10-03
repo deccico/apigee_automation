@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+git branch
+set
 files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
 git_branch=$(git rev-parse --abbrev-ref HEAD)
 
