@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 git branch
-set
 files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
-git_branch=$(git rev-parse --abbrev-ref HEAD)
+git_branch=$CI_BUILD_REF_NAME
 
 export APIGEE_ENV=$git_branch
 echo Start to sync branch $git_branch to $APIGEE_ENV environment
