@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="Usage: proxy_merge.sh --proxy=name --force=true --APIGEE_USER=username --APIGEE_PASSWORD=password  --APIGEE_ORG=organization"
+USAGE="Usage: proxy_export.sh --proxy=name --directory=directory --force=true --APIGEE_USER=username --APIGEE_PASSWORD=password  --APIGEE_ORG=organization"
 
 directory="./"
 force=false
@@ -10,6 +10,10 @@ do
 case $i in
     -p=*|--proxy=*)
     proxy="${i#*=}"
+    shift
+    ;;
+    -d=*|--directory=*)
+    directory="${i#*=}"
     shift
     ;;
     -f=*|--force=*)
@@ -44,8 +48,7 @@ else
 fi
 
 for proxy in ${proxies[@]}; do
-    echo Merge $proxy bundle files
-
+    echo Export $proxy bundle files
     statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
 
     if [[ $statusCode = *"HTTP/1.1 404"* ]]; then
@@ -55,29 +58,11 @@ for proxy in ${proxies[@]}; do
         revision=$(cat /tmp/$proxy.revisions.json | sed -e "s/\[.*\([0-9]\)\".*\]$/\1/g")
         echo Remote revision $revision
         curl --silent https://api.enterprise.apigee.com/v1/o/$APIGEE_ORG/apis/$proxy/revisions/$revision?"format=bundle" > /tmp/$proxy.zip -u $APIGEE_USER:$APIGEE_PASSWORD
-        rm -fR /tmp/$proxy
-        unzip /tmp/$proxy.zip -d /tmp/$proxy
-
-        if [ "$force" = true ] ; then
-            echo Use remote bundle files
-            cp -fr /tmp/$proxy ./
-        else
-            local_changed_time=$(find ./ -type f -exec stat \{} --printf="%y\n" \; | sort -n -r | head -n 1)
-            local_changed_time=$(date -d "$local_changed_time" +'%s%3N')
-
-            remote_changed_time=$(grep -ozP '(?s)<LastModifiedAt>(.*)</LastModifiedAt>' /tmp/$proxy/apiproxy/$proxy.xml | sed -e 's/<[^>]*>//g')
-
-            echo Local changed time $(date -d @$(( $(($local_changed_time)) / 1000 )))
-            echo Rmote changed time $(date -d @$(( $(($remote_changed_time)) / 1000 )))
-
-            if [ $(($remote_changed_time - $local_changed_time)) -gt 0 ]; then
-                echo Use remote bundle files
-                cp -fr /tmp/$proxy ./
-            else
-                echo Merge local and remote bundle files
-                cp -frn /tmp/$proxy ./
-            fi
-        fi
+        rm -fr /tmp/$proxy
+        unzip -o /tmp/$proxy.zip -d /tmp/$proxy
+        mkdir -p $directory
+        echo Save to $directory/$proxy
+        cp -fr /tmp/$proxy $directory
     fi
 done
 
