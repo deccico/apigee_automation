@@ -65,13 +65,13 @@ If everything goes fine. For every change of the API directory will be automatic
 The script scans changed files from Git's last commit to detect which API directory changed.
  
 1. For API bundle directory  
-If the API bundle does not exist, create the proxy, and then deploy bundle file to apigee. 
+If the API bundle does not exist, create the proxy, and then deploy the bundle files to apigee. 
 
 2. For open API without bundle directory  
-Invoke openapi2apigee to create or update the proxies. Push created bundle file to git remote repository. 
+Invoke openapi2apigee to create or update the proxies. Add the proxy bundle to the Git repository. 
 
 3. For open API with bundle directory  
-Invoke openapi2apigee to create or update the proxies. Update bundle file target's basepath and proxies's flow. and then deploy bundle file to apigee. 
+Invoke openapi2apigee to create or update the proxy. Update bundle file target's basepath and proxies's flow. and then deploy bundle file to apigee. 
 
 <br>
 <img src="doc/proxy_sync.png"/>
