@@ -77,18 +77,10 @@ do
 
         if [[ $statusCode = *"HTTP/1.1 404"* ]]; then
             echo "Create proxy $proxy"
-            curl --silent "Content-type:application/json" -X POST -d "{\"name\" : \"$proxy\"}"  $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/ -u $APIGEE_USER:$APIGEE_PASSWORD
-        else
-            echo Proxy $proxy exists
+            curl -H "Content-type:application/json" -X POST -d "{\"name\" : \"$proxy\"}"  $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/ -u $APIGEE_USER:$APIGEE_PASSWORD
         fi
 
-        if [ -f "$path/$proxy.xml" ]; then
-            echo "Deploy $path"
-            source ./proxy_deploy.sh $proxy $path
-        else
-            echo No $proxy bundle files found
-        fi
-    else
-        echo $proxy is removed
+        echo "Deploy $path"
+        source ./proxy_deploy.sh $proxy $path
     fi
 done
