@@ -16,9 +16,10 @@ RUN apt update && \
 WORKDIR /code/apigee_automation
 
 COPY *.template ./
+COPY Jenkinsfile ./
+COPY templates ./templates
+COPY *.md ./
 COPY *.py ./ 
 COPY *.sh ./
-COPY Jenkinsfile ./
-COPY *.md ./
-COPY templates ./
 
+WORKDIR /home/ubuntu

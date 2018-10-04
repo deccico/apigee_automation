@@ -1,8 +1,16 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
+set -o nounset
+
+export BASE=/code/apigee_automation 
 
 git branch
 files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
-git_branch=$CI_BUILD_REF_NAME
+if [ -z ${CI_BUILD_REF_NAME+x} ]; then 
+    git_branch=`git rev-parse --abbrev-ref HEAD`
+else
+    git_branch=$CI_BUILD_REF_NAME
+fi
+
 
 export APIGEE_ENV=$git_branch
 echo Start to sync branch $git_branch to $APIGEE_ENV environment
@@ -19,16 +27,20 @@ proxies=$(for i in ${files[@]}; do echo $i; done | sort -u)
 
 pwd=$(pwd)
 
-cd /code/apigee_automation/
-source ./setenv.sh
+source $BASE/setenv.sh
 
 for proxy in $proxies;
 do
     path="$pwd/$proxy"
 
+    if [[ ! $path = *"/"* ]]; then
+        echo "Invalid proxy dir $proxy"
+        continue
+    fi
+
     if [[ ! ( $proxy =~ ^[a-z0-9]+$ ) && ! ( $proxy =~ ^[a-z0-9]{1,8}-[a-z0-9-]+$ ) ]]; then
         echo "Invalid proxy name $proxy"
-        exit 1
+        continue
     fi
 
     if [ -f "$path/$proxy.json" ]; then
@@ -46,7 +58,7 @@ do
             sed -i -e "s|<URL\/>|$target_url|g" /tmp/$proxy/apiproxy/targets/default.xml
 
             echo "Deploy /tmp/$proxy/"
-            source ./proxy_deploy.sh $proxy /tmp/$proxy/
+            source $BASE/proxy_deploy.sh $proxy /tmp/$proxy/
 
         else
             openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/$proxy --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
@@ -60,27 +72,27 @@ do
 
             sed -i -e "s|<URL>.*<\/URL>|<URL\/>|g" $path/apiproxy/targets/default.xml
 
-            if [ ! -z ${SSH_PRIVATE_KEY+x} ]; then
-                echo Push $proxy proxy config
-                echo "${SSH_PRIVATE_KEY}" > /tmp/.id_rsa
-                cd $pwd
-                git config --global user.name "Jenkins Agent"
-                git config --global user.email "Jenkins_Agent@localhost"
-                git add $proxy
-                git commit -m "adding $proxy proxy config"
-                GIT_SSH_COMMAND="ssh -o 'StrictHostKeyChecking no' -i /tmp/.id_rsa" git push origin $git_branch
-                cd /code/apigee_automation/
-            fi
+            $BASE/persist_proxy.sh
         fi
     elif  [ -d "$path" ]; then
         statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
 
         if [[ $statusCode = *"HTTP/1.1 404"* ]]; then
-            echo "Create proxy $proxy"
-            curl -H "Content-type:application/json" -X POST -d "{\"name\" : \"$proxy\"}"  $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/ -u $APIGEE_USER:$APIGEE_PASSWORD
+            echo "Proxy $proxy does not exist. Creating it.."
+            echo 'Creating Apigee proxy'
+            target=http://cosafinity-prod.apigee.net/v1/employees
+            $BASE/proxy_gen.sh $proxy $target $proxy
+            echo 'Setup Apigee proxy policies'
+            python $BASE/police.py $proxy/apiproxy/ $proxy
+            echo 'Adding Virtual Hosts'
+            python $BASE/add_virtual_hosts.py $proxy/apiproxy/ $proxy
+            $BASE/proxy_persist.sh
+        else
+            echo Proxy $proxy exists updating it..
         fi
 
         echo "Deploy $path"
-        source ./proxy_deploy.sh $proxy $path
+        source $BASE/proxy_deploy.sh $proxy $path
+
     fi
 done

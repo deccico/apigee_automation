@@ -1,7 +1,7 @@
 #!/bin/bash -e
 set -o nounset
 
-source ./setenv.sh
+#source ./setenv.sh
 
 export name=$1
 export target_url=$2

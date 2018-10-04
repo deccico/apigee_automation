@@ -17,6 +17,7 @@ POLICY = 'Policy'
 SHARED_POLICY = "shared-policy"
 PROXYENDPOINT = 'ProxyEndpoint'
 PREFLOW = 'PreFlow'
+BASE_PATH=os.path.dirname(os.path.realpath(__file__))
 
 
 def add_shared_policy(directory, api_name):
@@ -129,7 +130,7 @@ def create_shared_policy(directory):
     if not os.path.isfile(file_name):
         if not os.path.isdir(base_dir):
             os.mkdir(base_dir)
-        copyfile('templates/policies/shared-policy.xml', file_name)
+        copyfile(os.path.join(BASE_PATH, 'templates/policies/shared-policy.xml'), file_name)
 
 
 def police(directory, api_name):
