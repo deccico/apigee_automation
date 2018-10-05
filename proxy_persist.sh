@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 set -o nounset
 
 echo ------------------------
@@ -15,10 +15,9 @@ if [ ! -z ${SSH_PRIVATE_KEY+x} ]; then
     chmod 400 $SSH_FILE
 fi
 
-cat $SSH_FILE
 git config --global user.name "Jenkins Agent"
 git config --global user.email "Jenkins_Agent@localhost"
 git add $proxy
 git commit -m "adding $proxy proxy config"
-GIT_SSH_COMMAND="ssh -o 'StrictHostKeyChecking no' -i $SSH_FILE" git push $REPO_ORIGIN $git_branch
+GIT_SSH_COMMAND="ssh -o 'StrictHostKeyChecking no' -i $SSH_FILE" git push $REPO_ORIGIN `git rev-parse HEAD`:$git_branch
 
