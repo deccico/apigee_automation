@@ -10,6 +10,7 @@ if [ -z ${CI_BUILD_REF_NAME+x} ]; then
 else
     git_branch=$CI_BUILD_REF_NAME
 fi
+export git_branch=$git_branch
 
 
 export APIGEE_ENV=$git_branch
@@ -31,15 +32,16 @@ source $BASE/setenv.sh
 
 for proxy in $proxies;
 do
+    export proxy=$proxy
     path="$pwd/$proxy"
 
     if [[ ! $path = *"/"* ]]; then
-        echo "Invalid proxy dir $proxy"
+        echo "Skipping $proxy"
         continue
     fi
 
     if [[ ! ( $proxy =~ ^[a-z0-9]+$ ) && ! ( $proxy =~ ^[a-z0-9]{1,8}-[a-z0-9-]+$ ) ]]; then
-        echo "Invalid proxy name $proxy"
+        echo "Skipping proxy $proxy as it has an invalid name."
         continue
     fi
 
