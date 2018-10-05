@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 set -o nounset
 
 echo ------------------------
@@ -15,6 +15,7 @@ if [ ! -z ${SSH_PRIVATE_KEY+x} ]; then
     chmod 400 $SSH_FILE
 fi
 
+set -x
 git config --global user.name "Jenkins Agent"
 git config --global user.email "Jenkins_Agent@localhost"
 git add $proxy
