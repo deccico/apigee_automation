@@ -9,6 +9,7 @@ RUN apt update && \
     python \
     unzip \ 
     vim \
+    jq \
     zip && \
     rm -rf /var/lib/apt/lists/* && \
     npm install -g openapi2apigee
