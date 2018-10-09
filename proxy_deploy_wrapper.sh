@@ -26,5 +26,6 @@ proxies=$(for i in ${proxies[@]}; do echo $i; done | sort -u)
 
 for proxy in $proxies;
 do
+    echo $DIR/proxy_deploy.sh $1 $BASE_API_PATH/$proxy $3
     $DIR/proxy_deploy.sh $1 $BASE_API_PATH/$proxy $3
 done
