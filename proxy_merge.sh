@@ -19,7 +19,7 @@ case $i in
     APIGEE_USER="${i#*=}"
     shift
     ;;
-    --APIGEE_PASWORD=*)
+    --APIGEE_PASSWORD=*)
     APIGEE_PASSWORD="${i#*=}"
     shift
     ;;
