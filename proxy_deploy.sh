@@ -9,6 +9,7 @@ source ./setenv.sh
 #echo "directory name for sample proxy to be deployed
 proxy=$1
 directory=${2:-$proxy}
+environment=${3:-$env}
 password=$APIGEE_PASSWORD
 
 echo Deploying $proxy to $env on $url using $APIGEE_USER and $APIGEE_ORG
