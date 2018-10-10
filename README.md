@@ -126,3 +126,55 @@ proxy_export.sh --proxy=name --directory=/tmp/backup --APIGEE_USER=username --AP
 - APIGEE_USER, APIGEE_PASSWORD, APIGEE_ORG  
   Optional. Apigee variables. The script arguments will override global bash Apigee variables.
   
+
+## Product Creation
+
+The script finds a product name from the json file. If the product exists, it will update it. If not, it will create the product.
+
+Usage:
+
+```bash
+./product_creation.sh --file=product.json --APIGEE_USER=<YOUR_USER> --APIGEE_PASSWORD=<YOUR_PASSWORD> --APIGEE_ORG=<YOUR_ORG> --APIGEE_URL=https://api.enterprise.apigee.com
+```
+
+File example:
+```
+product.json:
+
+{
+"apiResources": [
+"/"
+],
+"approvalType": "auto",
+"attributes": [
+{
+"name": "access",
+"value": "public"
+}
+],
+"createdAt": 1452706896178,
+"createdBy": "chi@darumatic.com",
+"description": "",
+"displayName": "Test Product",
+"environments": [
+"test",
+"prod"
+],
+"lastModifiedAt": 1452706896178,
+"lastModifiedBy": "chi@darumatic.com",
+"name": "TEST-PRODUCT2",
+"proxies": [
+"team-apiname"
+],
+"quota": "1000000",
+"quotaInterval": "1",
+"quotaTimeUnit": "minute",
+"scopes": [
+"owner.read",
+"owner.create",
+"owner.update",
+"owner.delete"
+]
+}
+```
+  
