@@ -127,6 +127,80 @@ proxy_export.sh --proxy=name --directory=/tmp/backup --APIGEE_USER=username --AP
   Optional. Apigee variables. The script arguments will override global bash Apigee variables.
   
 
+## Product Sync
+
+The script scans Git changes within the api-products directory and create/update corresponding Apigee products dynamically. 
+
+### Usage
+
+1. Create a Gitlab repository with a directory api-products. 
+2. Add product JSON to api-products. File example:
+
+    ```
+    {
+        "apiResources": [
+            "/"
+        ],
+        "approvalType": "auto",
+        "attributes": [
+            {
+                "name": "access",
+                "value": "public"
+            }
+        ],
+        "createdAt": 1452706896178,
+        "createdBy": "chi@darumatic.com",
+        "description": "",
+        "displayName": "Test Product",
+        "environments": [
+            "test",
+            "prod"
+        ],
+        "lastModifiedAt": 1452706896178,
+        "lastModifiedBy": "chi@darumatic.com",
+        "name": "TEST-PRODUCT1",
+        "proxies": [
+            "team-apiname"
+        ],
+        "quota": "1000000",
+        "quotaInterval": "1",
+        "quotaTimeUnit": "minute",
+        "scopes": [
+            "owner.read",
+            "owner.create",
+            "owner.update",
+            "owner.delete"
+        ]
+    }
+    ```
+3. Add .gitlab-ci.yml
+    ```
+    image: registry.gitlab.com/daru-public/apigee_automation
+    
+    services:
+    - docker:dind
+    
+    build-master:
+      stage: build
+      script:
+      - ls -R
+      - bash /code/apigee_automation/product_sync.sh
+      only:
+      - master
+    ```
+4. Configure Gitlab repository's CI/CD settings.  
+   ```
+   #Add these variables to CI/CD settings.
+   APIGEE_USER=Apigee Username
+   APIGEE_PASSWORD=Apigee password
+   APIGEE_ORG=Apigee Organization
+   APIGEE_URL=https://api.enterprise.apigee.com
+   APIGEE_API_DOMAIN=apigee.net
+   APIGEE_ENV=Apigee environment
+   ```
+5. Done. Push Git changes will trigger Gitlib pipeline to sync Apigee products.  
+
+
 ## Product Creation
 
 The script finds a product name from the json file. If the product exists, it will update it. If not, it will create the product.
@@ -142,39 +216,39 @@ File example:
 product.json:
 
 {
-"apiResources": [
-"/"
-],
-"approvalType": "auto",
-"attributes": [
-{
-"name": "access",
-"value": "public"
-}
-],
-"createdAt": 1452706896178,
-"createdBy": "chi@darumatic.com",
-"description": "",
-"displayName": "Test Product",
-"environments": [
-"test",
-"prod"
-],
-"lastModifiedAt": 1452706896178,
-"lastModifiedBy": "chi@darumatic.com",
-"name": "TEST-PRODUCT2",
-"proxies": [
-"team-apiname"
-],
-"quota": "1000000",
-"quotaInterval": "1",
-"quotaTimeUnit": "minute",
-"scopes": [
-"owner.read",
-"owner.create",
-"owner.update",
-"owner.delete"
-]
+    "apiResources": [
+        "/"
+    ],
+    "approvalType": "auto",
+    "attributes": [
+        {
+            "name": "access",
+            "value": "public"
+        }
+    ],
+    "createdAt": 1452706896178,
+    "createdBy": "chi@darumatic.com",
+    "description": "",
+    "displayName": "Test Product",
+    "environments": [
+        "test",
+        "prod"
+    ],
+    "lastModifiedAt": 1452706896178,
+    "lastModifiedBy": "chi@darumatic.com",
+    "name": "TEST-PRODUCT1",
+    "proxies": [
+        "team-apiname"
+    ],
+    "quota": "1000000",
+    "quotaInterval": "1",
+    "quotaTimeUnit": "minute",
+    "scopes": [
+        "owner.read",
+        "owner.create",
+        "owner.update",
+        "owner.delete"
+    ]
 }
 ```
   

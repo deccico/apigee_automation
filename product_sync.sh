@@ -4,17 +4,17 @@ set -o nounset
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
-echo Find changed files:
 
 len=${#files[@]}
 products=()
 
+echo Find changed product files:
 for((i=0;i<$len;i++))
 do
     file=${files[i]}
-    echo "  ${file}"
     if [[ "${file}" =~ ^api-products/.* ]]; then
         file=${files[i]%%\|*}
+        echo "  ${file}"
         products+=(${file})
     fi
 done
@@ -25,5 +25,6 @@ pwd=$(pwd)
 
 for product in ${products};
 do
+    echo Sync product ${product}
     $DIR/product_creation.sh --file=${pwd}/${product}
 done
