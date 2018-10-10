@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 set -o nounset
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
@@ -16,7 +16,7 @@ do
     echo "  $file"
     if [[ "$file" =~ ^api-proxies/.* ]]; then
         file=${file#*api-proxies/}
-        proxies+=${file%%/*}
+        proxies+=(${file%%/*})
     fi
 done
 
@@ -24,6 +24,7 @@ proxies=$(for i in ${proxies[@]}; do echo $i; done | sort -u)
 
 for proxy in $proxies;
 do
+    echo Running deploy script: 
     echo $DIR/proxy_deploy.sh $proxy $BASE_API_PATH/$proxy 
     $DIR/proxy_deploy.sh $proxy $BASE_API_PATH/$proxy 
 done
