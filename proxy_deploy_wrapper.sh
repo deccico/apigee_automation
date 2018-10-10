@@ -2,9 +2,7 @@
 set -o nounset
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-BASE_API_PATH=$2
-
-cd $BASE_API_PATH
+BASE_API_PATH=$1
 
 files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
 echo Find changed files:
@@ -26,6 +24,6 @@ proxies=$(for i in ${proxies[@]}; do echo $i; done | sort -u)
 
 for proxy in $proxies;
 do
-    echo $DIR/proxy_deploy.sh $1 $BASE_API_PATH/$proxy $3
-    $DIR/proxy_deploy.sh $1 $BASE_API_PATH/$proxy $3
+    echo $DIR/proxy_deploy.sh $proxy $BASE_API_PATH/$proxy 
+    $DIR/proxy_deploy.sh $proxy $BASE_API_PATH/$proxy 
 done
