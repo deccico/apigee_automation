@@ -16,7 +16,7 @@ do
     echo "  $file"
     if [[ "$file" =~ ^api-proxies/.* ]]; then
         file=${file#*api-proxies/}
-        proxies+=${file%%/*}
+        proxies+=(${file%%/*})
     fi
 done
 
