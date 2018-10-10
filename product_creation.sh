@@ -4,7 +4,7 @@ USAGE="Usage: product_creation.sh --file=name --APIGEE_USER=username --APIGEE_PA
 
 for i in "$@"
 do
-case $i in
+case ${i} in
     -f=*|--file=*)
     file="${i#*=}"
     shift
@@ -29,30 +29,30 @@ esac
 done
 
 if [ -z ${file+x} ]  || [ -z ${APIGEE_USER+x} ]  || [ -z ${APIGEE_PASSWORD+x} ] || [ -z ${APIGEE_ORG+x} ] || [ -z ${APIGEE_URL+x} ]; then
-    echo $USAGE
+    echo ${USAGE}
     exit 1
 fi
 
-if [ ! -f $file ]; then
-    echo "$file not exist"
+if [ ! -f ${file} ]; then
+    echo "${file} not exist"
     exit 1
 fi
 
-product=$(cat $file | jq -r ".name")
+product=$(cat ${file} | jq -r ".name")
 
-if [ $product = "null" ]; then
+if [ ${product} = "null" ]; then
     echo "Invalid product name"
     exit 1
 fi
 
-statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apiproducts/$product -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
+statusCode="$(curl -Is -o /dev/null -w %{http_code} ${APIGEE_URL}/v1/organizations/${APIGEE_ORG}/apiproducts/${product} -u ${APIGEE_USER}:${APIGEE_PASSWORD})"
 
-if [[ $statusCode = *"HTTP/1.1 404"* ]]; then
-    echo "Product $product does not exist. Creating it.."
-    echo 'Creating Apigee product'
-
-    curl -X POST -H "Content-type:application/json" -d @${file} $APIGEE_URL/v1/organizations/$APIGEE_ORG/apiproducts -u $APIGEE_USER:$APIGEE_PASSWORD
+if [[ ${statusCode} = "404" ]]; then
+    echo "Product ${product} does not exist. Creating it.."
+    curl -s -X POST -H "Content-type:application/json" -d @${file} ${APIGEE_URL}/v1/organizations/${APIGEE_ORG}/apiproducts -u ${APIGEE_USER}:${APIGEE_PASSWORD}
+    echo -e "\nSuccess"
 else
-    echo Product $product exists updating it..
-    curl -X PUT -H "Content-type:application/json" -d @${file} $APIGEE_URL/v1/organizations/$APIGEE_ORG/apiproducts/$product -u $APIGEE_USER:$APIGEE_PASSWORD
+    echo "Product ${product} exists. Updating it.."
+    curl -s -X PUT -H "Content-type:application/json" -d @${file} ${APIGEE_URL}/v1/organizations/${APIGEE_ORG}/apiproducts/${product} -u ${APIGEE_USER}:${APIGEE_PASSWORD}
+    echo -e "\nSuccess"
 fi
