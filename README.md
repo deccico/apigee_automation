@@ -148,16 +148,12 @@ The script scans Git changes within the api-products directory and create/update
                 "value": "public"
             }
         ],
-        "createdAt": 1452706896178,
-        "createdBy": "chi@darumatic.com",
         "description": "",
         "displayName": "Test Product",
         "environments": [
-            "test",
-            "prod"
+            "dev",
+            "sandbox"
         ],
-        "lastModifiedAt": 1452706896178,
-        "lastModifiedBy": "chi@darumatic.com",
         "name": "TEST-PRODUCT1",
         "proxies": [
             "team-apiname"
@@ -212,9 +208,8 @@ Usage:
 ```
 
 File example:
-```
 product.json:
-
+```
 {
     "apiResources": [
         "/"
@@ -226,16 +221,12 @@ product.json:
             "value": "public"
         }
     ],
-    "createdAt": 1452706896178,
-    "createdBy": "chi@darumatic.com",
     "description": "",
     "displayName": "Test Product",
     "environments": [
-        "test",
-        "prod"
+        "sandbox",
+        "dev"
     ],
-    "lastModifiedAt": 1452706896178,
-    "lastModifiedBy": "chi@darumatic.com",
     "name": "TEST-PRODUCT1",
     "proxies": [
         "team-apiname"
