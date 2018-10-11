@@ -4,7 +4,7 @@ set -o nounset
 export BASE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 git branch
-files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
+files=($(git diff-tree --no-commit-id --name-only -r HEAD))
 if [ -z ${CI_BUILD_REF_NAME+x} ]; then 
     git_branch=`git rev-parse --abbrev-ref HEAD`
 else
