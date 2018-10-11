@@ -1,14 +1,7 @@
-#!/usr/bin/env bash 
+#!/bin/bash -e
 set -o nounset
 
-export BASE=/code/apigee_automation
-
-if [ -z ${APIGEE_SEAMLESS_DEPLOYMENT+x} ]; then
-    seamless_deployment="true"
-else
-    seamless_deployment=""
-fi
-export seamless_deployment=$seamless_deployment
+export BASE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 git branch
 files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
@@ -37,6 +30,11 @@ pwd=$(pwd)
 
 source $BASE/setenv.sh
 
+if [ -z ${APIGEE_SEAMLESS_DEPLOYMENT+x} ]; then
+    seamless_deployment=""
+else
+    seamless_deployment="-s"
+fi
 
 for proxy in $proxies;
 do
@@ -67,9 +65,8 @@ do
             sed -i -e "s|<Flows\/>|$flows|g" /tmp/$proxy/apiproxy/proxies/default.xml
             sed -i -e "s|<URL\/>|$target_url|g" /tmp/$proxy/apiproxy/targets/default.xml
 
-            echo "Deploy /tmp/$proxy/"
-            source $BASE/proxy_deploy.sh $proxy /tmp/$proxy/ $env $seamless_deployment
-
+            echo Deploying $proxy on directory /tmp/$proxy/ to $APIGEE_ENV on $APIGEE_URL using $APIGEE_USER and $APIGEE_ORG
+            $BASE/deploy.py -n $proxy -u $APIGEE_USER:$APIGEE_PASSWORD -o $APIGEE_ORG -h $APIGEE_URL -e $APIGEE_ENV -p / -d /tmp/$proxy/ $seamless_deployment
         else
             openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/$proxy --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
 
@@ -82,7 +79,7 @@ do
 
             sed -i -e "s|<URL>.*<\/URL>|<URL\/>|g" $path/apiproxy/targets/default.xml
 
-            $BASE/persist_proxy.sh
+            $BASE/proxy_persist.sh
         fi
     elif  [ -d "$path" ]; then
         statusCode="$(curl -Is -o /dev/null -w %{http_code} $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD)"
@@ -101,8 +98,7 @@ do
             echo Proxy $proxy exists updating it..
         fi
 
-        echo "Deploy $path"
-        source $BASE/proxy_deploy.sh $proxy $path $env $seamless_deployment
-
+        echo Deploying $proxy on directory $path to $APIGEE_ENV on $APIGEE_URL using $APIGEE_USER and $APIGEE_ORG
+        $BASE/deploy.py -n $proxy -u $APIGEE_USER:$APIGEE_PASSWORD -o $APIGEE_ORG -h $APIGEE_URL -e $APIGEE_ENV -p / -d $path $seamless_deployment
     fi
 done

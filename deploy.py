@@ -128,7 +128,7 @@ ShouldDeploy = True
 ShouldOverride = False
 GracePeriod = 15
 
-Options = 'h:u:d:e:n:p:o:i:z:s:'
+Options = 'h:u:d:e:n:p:o:i:zs'
 
 # print(str(sys.argv))
 
@@ -255,13 +255,14 @@ if ShouldDeploy:
         sys.exit(2)
 
 if ShouldOverride:
-    # Deploy the bundle
-    hdrs = {'Accept': 'application/json'}
+    # Seamless Deploy the bundle
+    print 'Seamless deploy %s' % Name
+    hdrs = {'Content-Type': 'application/x-www-form-urlencoded'}
     resp = httpCall('POST',
-                    ('/v1/organizations/%s/apis/%s/revisions/%s/deployments' +
+                    ('/v1/organizations/%s/environments/%s/apis/%s/revisions/%s/deployments' +
                      '?override=true' +
                      '&delay=%s') % \
-                    (Organization, Name, revision, GracePeriod),
+                    (Organization, Environment, Name, revision, GracePeriod),
                     hdrs, None)
 
     if resp.status != 200 and resp.status != 201:
