@@ -12,7 +12,7 @@ environment=${3:-${env}}
 seamless_deployment=${4:-"false"}
 password=${APIGEE_PASSWORD}
 
-if [seamless_deployment = "true" ]; then
+if [ $seamless_deployment = "true" ]; then
     echo Seamless deploying ${proxy} on directory ${directory} to ${environment} on ${url} using ${APIGEE_USER} and ${APIGEE_ORG}
     ${DIR}/deploy.py -n ${proxy} -u ${APIGEE_USER}:${APIGEE_PASSWORD} -o ${APIGEE_ORG} -h ${url} -e ${environment} -p / -d ${directory} -h ${url} -s
 else
