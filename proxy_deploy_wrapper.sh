@@ -4,7 +4,7 @@ set -o nounset
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BASE_API_PATH=$1
 
-files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
+files=($(git diff-tree --no-commit-id --name-only -r HEAD))
 echo Find changed files:
 
 len=${#files[@]}

@@ -3,7 +3,7 @@ set -o nounset
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
+files=($(git diff-tree --no-commit-id --name-only -r HEAD))
 
 len=${#files[@]}
 products=()
