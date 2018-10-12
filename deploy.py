@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
+import StringIO
 import base64
 import getopt
 import httplib
 import json
-import re
 import os
+import re
 import sys
-import StringIO
 import urlparse
 import xml.dom.minidom
 import zipfile
@@ -69,9 +69,9 @@ def getDeployments():
     # Print info on deployments
     hdrs = {'Accept': 'application/xml'}
     resp = httpCall('GET',
-            '/v1/organizations/%s/apis/%s/deployments' \
-                % (Organization, Name),
-            hdrs, None)
+                    '/v1/organizations/%s/apis/%s/deployments' \
+                    % (Organization, Name),
+                    hdrs, None)
 
     if resp.status != 200:
         return None
@@ -96,9 +96,9 @@ def getDeployments():
 
             # svrs = rev.getElementsByTagName('Server')
             status = {'environment': envName,
-                    'revision': revNum,
-                    'basePath': basePath,
-                    'state': state}
+                      'revision': revNum,
+                      'basePath': basePath,
+                      'state': state}
 
             if error != None:
                 status['error'] = error
@@ -116,6 +116,7 @@ def printDeployments(dep):
         if 'error' in d:
             print '  Error: %s' % d['error']
 
+
 ApigeeHost = 'https://api.enterprise.apigee.com'
 UserPW = None
 Directory = None
@@ -124,10 +125,12 @@ Environment = None
 Name = None
 BasePath = '/'
 ShouldDeploy = True
+ShouldOverride = False
+GracePeriod = 15
 
-Options = 'h:u:d:e:n:p:o:i:z:'
+Options = 'h:u:d:e:n:p:o:i:zs'
 
-#print(str(sys.argv))
+# print(str(sys.argv))
 
 opts = getopt.getopt(sys.argv[1:], Options)[0]
 
@@ -150,6 +153,9 @@ for o in opts:
         ShouldDeploy = False
     elif o[0] == '-z':
         ZipFile = o[1]
+    elif o[0] == '-s':
+        ShouldDeploy = False
+        ShouldOverride = True
 
 if UserPW == None or \
         (Directory == None and ZipFile == None) or \
@@ -183,8 +189,8 @@ if Directory != None:
                 if not fileEntry.endswith('~'):
                     fn = os.path.join(dirEntry[0], fileEntry)
                     en = os.path.join(
-                            os.path.relpath(dirEntry[0], Directory),
-                            fileEntry)
+                        os.path.relpath(dirEntry[0], Directory),
+                        fileEntry)
                     print 'Writing %s to %s' % (fn, en)
                     zipout.write(fn, en)
 
@@ -199,12 +205,12 @@ elif ZipFile != None:
 hdrs = {'Content-Type': 'application/octet-stream',
         'Accept': 'application/json'}
 uri = '/v1/organizations/%s/apis?action=import&name=%s' % \
-            (Organization, Name)
+      (Organization, Name)
 resp = httpCall('POST', uri, hdrs, body)
 
 if resp.status != 200 and resp.status != 201:
     print 'Import failed to %s with status %i:\n%s' % \
-            (uri, resp.status, resp.read())
+          (uri, resp.status, resp.read())
     sys.exit(2)
 
 deployment = json.load(resp)
@@ -217,32 +223,47 @@ if ShouldDeploy:
     deps = getDeployments()
     for d in deps:
         if d['environment'] == Environment and \
-            d['basePath'] == BasePath and \
-            d['revision'] != revision:
+                d['basePath'] == BasePath and \
+                d['revision'] != revision:
             print 'Undeploying revision %i in same environment and path:' % \
-                    d['revision']
+                  d['revision']
             conn = httplib.HTTPSConnection(httpHost)
             resp = httpCall('POST',
-                    ('/v1/organizations/%s/apis/%s/deployments' +
-                            '?action=undeploy' +
-                            '&env=%s' +
-                            '&revision=%i') % \
-                        (Organization, Name, Environment, d['revision']),
-                 None, None)
+                            ('/v1/organizations/%s/apis/%s/deployments' +
+                             '?action=undeploy' +
+                             '&env=%s' +
+                             '&revision=%i') % \
+                            (Organization, Name, Environment, d['revision']),
+                            None, None)
             if resp.status != 200 and resp.status != 204:
                 print 'Error %i on undeployment:\n%s' % \
-                        (resp.status, resp.read())
-                        
+                      (resp.status, resp.read())
+
     # Deploy the bundle
     hdrs = {'Accept': 'application/json'}
     resp = httpCall('POST',
-        ('/v1/organizations/%s/apis/%s/deployments' +
-                '?action=deploy' +
-                '&env=%s' +
-                '&revision=%i' +
-                '&basepath=%s') % \
-            (Organization, Name, Environment, revision, BasePath),
-        hdrs, None)
+                    ('/v1/organizations/%s/apis/%s/deployments' +
+                     '?action=deploy' +
+                     '&env=%s' +
+                     '&revision=%i' +
+                     '&basepath=%s') % \
+                    (Organization, Name, Environment, revision, BasePath),
+                    hdrs, None)
+
+    if resp.status != 200 and resp.status != 201:
+        print 'Deploy failed with status %i:\n%s' % (resp.status, resp.read())
+        sys.exit(2)
+
+if ShouldOverride:
+    # Seamless Deploy the bundle
+    print 'Seamless deploy %s' % Name
+    hdrs = {'Content-Type': 'application/x-www-form-urlencoded'}
+    resp = httpCall('POST',
+                    ('/v1/organizations/%s/environments/%s/apis/%s/revisions/%s/deployments' +
+                     '?override=true' +
+                     '&delay=%s') % \
+                    (Organization, Environment, Name, revision, GracePeriod),
+                    hdrs, None)
 
     if resp.status != 200 and resp.status != 201:
         print 'Deploy failed with status %i:\n%s' % (resp.status, resp.read())

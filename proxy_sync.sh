@@ -1,10 +1,10 @@
-#!/usr/bin/env bash 
+#!/bin/bash -e
 set -o nounset
 
-export BASE=/code/apigee_automation 
+export BASE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 git branch
-files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
+files=($(git diff-tree --no-commit-id --name-only -r HEAD))
 if [ -z ${CI_BUILD_REF_NAME+x} ]; then 
     git_branch=`git rev-parse --abbrev-ref HEAD`
 else
@@ -29,6 +29,12 @@ proxies=$(for i in ${files[@]}; do echo $i; done | sort -u)
 pwd=$(pwd)
 
 source $BASE/setenv.sh
+
+if [ -z ${APIGEE_SEAMLESS_DEPLOYMENT+x} ]; then
+    seamless_deployment=""
+else
+    seamless_deployment="-s"
+fi
 
 for proxy in $proxies;
 do
@@ -59,9 +65,8 @@ do
             sed -i -e "s|<Flows\/>|$flows|g" /tmp/$proxy/apiproxy/proxies/default.xml
             sed -i -e "s|<URL\/>|$target_url|g" /tmp/$proxy/apiproxy/targets/default.xml
 
-            echo "Deploy /tmp/$proxy/"
-            source $BASE/proxy_deploy.sh $proxy /tmp/$proxy/
-
+            echo Deploying $proxy on directory /tmp/$proxy/ to $APIGEE_ENV on $APIGEE_URL using $APIGEE_USER and $APIGEE_ORG
+            $BASE/deploy.py -n $proxy -u $APIGEE_USER:$APIGEE_PASSWORD -o $APIGEE_ORG -h $APIGEE_URL -e $APIGEE_ENV -p / -d /tmp/$proxy/ $seamless_deployment
         else
             openapi2apigee generateApi $proxy --source $path/$proxy.json --deploy --destination /tmp/$proxy --baseuri $APIGEE_URL --organization $APIGEE_ORG --environments $APIGEE_ENV --virtualhosts default --username $APIGEE_USER --password $APIGEE_PASSWORD
 
@@ -74,12 +79,12 @@ do
 
             sed -i -e "s|<URL>.*<\/URL>|<URL\/>|g" $path/apiproxy/targets/default.xml
 
-            $BASE/persist_proxy.sh
+            $BASE/proxy_persist.sh
         fi
     elif  [ -d "$path" ]; then
-        statusCode="$(curl -Is $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD | head -n 1)"
+        statusCode="$(curl -Is -o /dev/null -w %{http_code} $APIGEE_URL/v1/organizations/$APIGEE_ORG/apis/$proxy -u $APIGEE_USER:$APIGEE_PASSWORD)"
 
-        if [[ $statusCode = *"HTTP/1.1 404"* ]]; then
+        if [ ${statusCode} = "404" ]; then
             echo "Proxy $proxy does not exist. Creating it.."
             echo 'Creating Apigee proxy'
             target=http://cosafinity-prod.apigee.net/v1/employees
@@ -93,8 +98,7 @@ do
             echo Proxy $proxy exists updating it..
         fi
 
-        echo "Deploy $path"
-        source $BASE/proxy_deploy.sh $proxy $path
-
+        echo Deploying $proxy on directory $path to $APIGEE_ENV on $APIGEE_URL using $APIGEE_USER and $APIGEE_ORG
+        $BASE/deploy.py -n $proxy -u $APIGEE_USER:$APIGEE_PASSWORD -o $APIGEE_ORG -h $APIGEE_URL -e $APIGEE_ENV -p / -d $path $seamless_deployment
     fi
 done
