@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 USAGE="Usage: proxy_export.sh --proxy=name --directory=directory --force=true --APIGEE_USER=username --APIGEE_PASSWORD=password  --APIGEE_ORG=organization"
 

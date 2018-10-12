@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 USAGE="Usage: proxy_merge.sh --proxy=name --force=true --APIGEE_USER=username --APIGEE_PASSWORD=password  --APIGEE_ORG=organization"
 
