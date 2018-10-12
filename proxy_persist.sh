@@ -19,5 +19,5 @@ git config --global user.name "Jenkins Agent"
 git config --global user.email "Jenkins_Agent@localhost"
 git add $proxy
 git commit -m "adding $proxy proxy config"
-GIT_SSH_COMMAND="ssh -o 'StrictHostKeyChecking no' -i $SSH_FILE" git push $REPO_ORIGIN `git rev-parse HEAD`:$git_branch
+GIT_SSH_COMMAND="ssh -o 'StrictHostKeyChecking no' -i $SSH_FILE" git push origin `git rev-parse HEAD`:$git_branch
 
