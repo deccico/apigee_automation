@@ -9,7 +9,9 @@ pwd
 mkdir -p /tmp/.ssh
 SSH_FILE=/tmp/.ssh/id_rsa
 
-if [ $SSH_PRIVATE_KEY ]; then
+if [ -z ${SSH_PRIVATE_KEY+x} ]; then
+    echo SSH_PRIVATE_KEY not set
+else
     echo Create SSH file
     echo "${SSH_PRIVATE_KEY}" > $SSH_FILE
     chmod 400 $SSH_FILE
