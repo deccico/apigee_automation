@@ -22,5 +22,9 @@ git config --global user.email "Jenkins_Agent@localhost"
 git add api-proxies/$proxy
 git commit -m "adding $proxy proxy config"
 echo git push origin $(git rev-parse HEAD):$git_branch
+
+remote_url=$(git remote get-url origin | sed -e "s/https:\/\/gitlab-ci-token:.*@/https:\/\//g")
+git remote set-url origin $remote_url
+
 GIT_SSH_COMMAND="ssh -o 'StrictHostKeyChecking no' -i $SSH_FILE" git push origin $(git rev-parse HEAD):$git_branch
 
