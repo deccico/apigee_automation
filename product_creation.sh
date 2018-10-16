@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -e
 
 USAGE="Usage: product_creation.sh --file=name --APIGEE_USER=username --APIGEE_PASSWORD=password --APIGEE_ORG=organization --APIGEE_URL=url"
 

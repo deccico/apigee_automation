@@ -18,13 +18,18 @@ echo Start to sync branch $git_branch to $APIGEE_ENV environment
 echo Find changed files:
 
 len=${#files[@]}
+proxies=()
+
 for((i=0;i<$len;i++))
 do
-    echo "  ${files[i]}"
-    files[i]=${files[i]%%/*}
+    file=${files[i]}
+    echo "  $file"
+    if [[ "$file" =~ ^api-proxies/.* ]]; then
+        file=${file#*api-proxies/}
+        proxies+=(${file%%/*})
+    fi
 done
-
-proxies=$(for i in ${files[@]}; do echo $i; done | sort -u)
+proxies=$(for i in ${proxies[@]}; do echo $i; done | sort -u)
 
 pwd=$(pwd)
 
@@ -39,7 +44,7 @@ fi
 for proxy in $proxies;
 do
     export proxy=$proxy
-    path="$pwd/$proxy"
+    path="$pwd/api-proxies/$proxy"
 
     if [[ ! $path = *"/"* ]]; then
         echo "Skipping $proxy"

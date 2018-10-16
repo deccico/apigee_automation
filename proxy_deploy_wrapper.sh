@@ -4,7 +4,13 @@ set -o nounset
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BASE_API_PATH=$1
 
-files=($(git show --stat --oneline HEAD | grep "|" | tr -d "[:blank:]"))
+if [ -z ${APIGEE_SEAMLESS_DEPLOYMENT+x} ]; then
+    seamless_deployment=""
+else
+    seamless_deployment="-s"
+fi
+
+files=($(git diff-tree --no-commit-id --name-only -r HEAD))
 echo Find changed files:
 
 len=${#files[@]}
@@ -24,7 +30,6 @@ proxies=$(for i in ${proxies[@]}; do echo $i; done | sort -u)
 
 for proxy in $proxies;
 do
-    echo Running deploy script: 
-    echo $DIR/proxy_deploy.sh $proxy $BASE_API_PATH/$proxy 
-    $DIR/proxy_deploy.sh $proxy $BASE_API_PATH/$proxy 
+    echo Deploying $proxy on directory $BASE_API_PATH/$proxy to $APIGEE_ENV on $APIGEE_URL using $APIGEE_USER and $APIGEE_ORG
+    $DIR/deploy.py -n $proxy -u $APIGEE_USER:$APIGEE_PASSWORD -o $APIGEE_ORG -h $APIGEE_URL -e $APIGEE_ENV -p / -d $BASE_API_PATH/$proxy $seamless_deployment
 done
