@@ -47,7 +47,7 @@ The script scans Git changes within an API directory and create/update correspon
    APIGEE_API_DOMAIN=apigee.net
    APIGEE_ENV=Apigee environment
    SSH_PRIVATE_KEY=Deployment private key
-   APIGEE_SEAMLESS_DEPLOYMENT=defined
+   APIGEE_SEAMLESS_DEPLOYMENT=true
    ```
    <img src="doc/variable.png"/>
    
