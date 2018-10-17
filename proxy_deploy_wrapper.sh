@@ -4,6 +4,9 @@ set -o nounset
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 BASE_API_PATH=$1
 
+#deciding proxy environment
+branch=${2}
+
 if [ -z ${APIGEE_SEAMLESS_DEPLOYMENT+x} ]; then
     seamless_deployment=""
 else
@@ -27,11 +30,6 @@ do
 done
 
 proxies=$(for i in ${proxies[@]}; do echo $i; done | sort -u)
-
-#deciding proxy environment
-#the Apigee environment will be either the second parameter (prefered) or the branch we are working on (default option)
-git_branch=`git rev-parse --abbrev-ref HEAD`
-branch=${2:-$git_branch}
 
 for proxy in $proxies;
 do
