@@ -28,8 +28,13 @@ done
 
 proxies=$(for i in ${proxies[@]}; do echo $i; done | sort -u)
 
+#deciding proxy environment
+#the Apigee environment will be either the second parameter (prefered) or the branch we are working on (default option)
+git_branch=`git rev-parse --abbrev-ref HEAD`
+branch=${2:-$git_branch}
+
 for proxy in $proxies;
 do
-    echo Deploying $proxy on directory $BASE_API_PATH/$proxy to $APIGEE_ENV on $APIGEE_URL using $APIGEE_USER and $APIGEE_ORG
-    $DIR/deploy.py -n $proxy -u $APIGEE_USER:$APIGEE_PASSWORD -o $APIGEE_ORG -h $APIGEE_URL -e $APIGEE_ENV -p / -d $BASE_API_PATH/$proxy $seamless_deployment
+    echo Deploying $proxy on directory $BASE_API_PATH/$proxy to $branch on $APIGEE_URL using $APIGEE_USER and $APIGEE_ORG
+    $DIR/deploy.py -n $proxy -u $APIGEE_USER:$APIGEE_PASSWORD -o $APIGEE_ORG -h $APIGEE_URL -e $branch -p / -d $BASE_API_PATH/$proxy $seamless_deployment
 done
