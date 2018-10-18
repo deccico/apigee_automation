@@ -7,8 +7,10 @@ BASE_API_PATH=$1
 #deciding proxy environment
 branch=${2}
 
-if [ -z ${APIGEE_SEAMLESS_DEPLOYMENT+x} ]; then
+if [ -z ${APIGEE_SEAMLESS_DEPLOYMENT+x} ] || [ $APIGEE_SEAMLESS_DEPLOYMENT != "true" ] ; then
     APIGEE_SEAMLESS_DEPLOYMENT="false"
+else
+    APIGEE_SEAMLESS_DEPLOYMENT="true"
 fi
 
 files=($(git diff-tree --no-commit-id --name-only -r HEAD))
