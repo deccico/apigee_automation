@@ -128,7 +128,7 @@ ShouldDeploy = True
 ShouldOverride = False
 GracePeriod = 15
 
-Options = 'h:u:d:e:n:p:o:i:zs'
+Options = 'h:u:d:e:n:p:o:i:z:s:'
 
 # print(str(sys.argv))
 
@@ -154,8 +154,8 @@ for o in opts:
     elif o[0] == '-z':
         ZipFile = o[1]
     elif o[0] == '-s':
-        ShouldDeploy = False
-        ShouldOverride = True
+        ShouldOverride = o[1].lower() == 'true'
+        ShouldDeploy = not ShouldOverride
 
 if UserPW == None or \
         (Directory == None and ZipFile == None) or \
